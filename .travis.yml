@@ -17,7 +17,7 @@ env:
   - ARCH=ppc64el-next SKIP_TAG=1
   - ARCH=s390x
   global:
-    secure: "abqIwyPa3Zed8sJymFYeJkS9Ft3z8DXBs7h0f9c+/8PDxicJd6vo9nczAgWPpjzsMUxXZLG2yom0CmABAt9k6Gb8omuGnR8bDCBENzCnoJjrlIoL2XIR1x51lMrihjlgJ3nuOXWBHScIBCkyT+JCvA206gVoLgx1ueXfLfIrhZSHTB2k6cwvhoXlsC/Gxny2t4waJObC7Pa8Mk0zzCvl5R7VJZzpO17cWVcbX2Wa9rx2Kw3s+wVSm8tC5hFHeE86ZQlrBIbf+JTWf/v9gX3yWOvhEYMM0zTKH6XETDFkcvB9oZPlqW5YvGabaZ7snrwTkvKG9K3eNYJLo+1hHQ8sHyxSQFTImSoeugI4DtRZh92vRL4r7PlvvZHA1m+U/CuJhtv7J9xanI2pRrnYDy7QttXzZBZcrKAt1E3J1IUsHCTvPPcxG560JxsHGtBgW00uhfZO98QntxGKy3c83f057NM4bI2Cv3YaGW7bFsn3Sd8t2N87HZxvZLQ+ym+ON04KdyOoJEjcDDBsyFvd62zpTvZfiD4Co3X3hUD4R2JaCoiTtY27TlEbeLnmrf0C8mZe2a0lx+InlcSUp5/s+GQ48S9qCI7SyOnZB2UkYGK+3ObXeqtbP9D9poJf+LAm2nZQB5rlarXAlOp4P14TbZvQZ+lZbNCCpL3PPgYzdp9fHB4="
+    secure: "NGpkPyR+Yw5ibEeGuXDm3jv5QlDNio8U+n5q8QjpKJMk66Y7W0zWgHNkS6gZ07Fk9MHwxHF+GA+4xoN1DFRG1qr7ERhlXBq636pVpU2H3vOCe1CWHdU7ZrEoxjzNLQOcHx+BL7/etQKTdEssEj5AQMmIiweQmqJs9EBGXxJdUsZMNCGN/5Xnht0HZ8QiH+salR1ra3vIHerm8XYuIZeozA2Zu8q39inh9s5MYqCbQzFnjtBxlbeaKhDU2cC1lUKWaKBhzNtuaCx3OX56R1a9QmQxeqUcJ57a0YWobQqUmKrluRhfM65UN9+PCP3rwHPhE/RGFIV/V2Kxlr7FViJPEABZNMbyyiz+KaUS6kugdg8RD3r79IZZ7NIP73wBY7BY98RZSb1Hhg2nfwNoZewc/Jba0fpzYXoiaG8M0tGRRV5EQfqL6iIO0QXVxM6UnOTJQjlbdVlu7zuQpJQabRwEVMIzfbebjaHtPMOQZAcBDvtEz9heJOFWqnQnbIjMSjR1zexNIgNHbQbynRRfuyXoToRoc5jJDOKWJwHb06RIlAgdFQXnvj1JkiOHTJ7AKLZZg83tHLjZEvwLcIKdhbZ4850D5TBiKADDqrlDIoYetZuCiCSkHGRY7NfAgDbPV7CPtt3IAAEu2c8DxadC5MmynJv84reRbzgQt06ILIvKQZU="
 
 matrix:
   fast_finish: true
@@ -37,10 +37,10 @@ addons:
 
 script:
 - dpkg -s qemu-user-static
-- docker build -t laarid/devel:$ARCH devel/$ARCH
-- O=$(docker run --rm laarid/devel:$ARCH /bin/bash -c 'ls /usr/bin/qemu-*');
+- docker build -t laarid/native-build:$ARCH $ARCH
+- O=$(docker run --rm laarid/native-build:$ARCH /bin/bash -c 'ls /usr/bin/qemu-*');
   if [ -n "$O" ]; then
-    docker run --rm laarid/devel:$ARCH $O --version;
+    docker run --rm laarid/native-build:$ARCH $O --version;
   fi
 - |
   git clone -o laarid https://github.com/laarid/package_laarid-meta.git \
@@ -48,16 +48,16 @@ script:
   docker run --rm \
     --volume ${TRAVIS_BUILD_DIR%${TRAVIS_REPO_SLUG}}:${TRAVIS_BUILD_DIR%${TRAVIS_REPO_SLUG}} \
     --workdir ${TRAVIS_BUILD_DIR%${TRAVIS_REPO_SLUG}}/laarid-meta \
-    laarid/devel:$ARCH \
+    laarid/native-build:$ARCH \
     debuild -i -us -uc -b
 
 after_success:
 - if [ "$TRAVIS_PULL_REQUEST" == "false" -a -z "${SKIP_TAG}" ]; then
-  docker login -u "$DOCKER_USER" -p "$DOCKER_PASS";
-  docker push laarid/devel:$ARCH;
+    docker login -u "$DOCKER_USER" -p "$DOCKER_PASS";
+    docker push laarid/native-build:$ARCH;
   fi
 
 notifications:
   slack:
     rooms:
-    - secure: "AqxV+PQXnDuLA4jeduqPoFWMTm78CyI3+uGf0aB3YQeZw9vjcM5W7TzozH3MjRnw5JkWxyZGULZJkqklZXRnmJf8ify+6dsd2NeEKB8SEiMwrjaRLwc4/roVCArEJyhhU2o0ZvK/iQitoaC6PBhPcTiockv2eNj7Eqw1krdwnFEwDQ5Qn5ehr6EkjuUd8VdqaUMs/kIGNv7I67Ahg1/a2CHU8W8MmO00B6uZ0UAIDdJhSn5YFNr9wseSKlFXP2aQ9nmyC17q24HMk5rVkkts45Kzp102CPrh9ycZqBsKJjsxUqxfYq2DAq/Tk24AzWKNZQMM1jpwPqom/Tl580TtvfDC1E50LBUtEZweE9dIOtMKQ97TFa/hWrm5l+B4dX9rN8Yy9ifGsxhNmF0PWR8Hj3+kJh4pjfCdGQsvb2OLM30yWSU/SAkAlwZUjeTWvsQ9WVlI8130ltW47AgSfCVwx3inCMZie/fpnpjLBTKIrzpsf6dRvkVRtUIKq3YrpDsmMF7dp/2tj+rDKnq18bHDyPFy9QS0Gls6pIUlKxJZJMXUK/lB3MjC6ByB2kYv+P6Iugt8/F3U2YA8VqrB0QcZpZqxlPGj7awvJqxO6G4i3AEEfpN/KSAPXnx7VKUwLVMmKogKo6P7aQxgIGofo/r/qfRSD2+Qa4HRPolHXmRUvKA="
+    - secure: "D7zKMkeCkg/7uhmDJrAVlqfcXjQJEExsYvgQI2RYXXrlRCCE9PK3OzFCGXejCizDQ8cFHEuDeH6zM0x09u+a6jNThrsvsnsa1/BKVP1wos9DqaHrO6zF5Gmem7koeud+c7CzHsiJIErwQdHbShCBU4m/Pb/K1Hy4ExqRBuJtWkWhxi8QjRKgYjE0RdknWXmuNrEjbdOh046DhWaT/lA7BH1BoXBm8RKvIaIrrBpgc09TzF80IltCDbgFPq8rdj8Z9Oe0hzJNZGYbRUBFrSHtnFKpr+BAWQiWVGVZDZwTMSnPSVE5uWq5KQ3VTNOGsFM+HDVl5M+TgGSCcl72nRRlloe24e+FseofFm1HR4IcVKBNez6lANiQk99fMmXcOw408vaaaP4p2meNLwK7mqEvM51do+y2Woa/YtGobtMsAyWCs+4CBQjWWQsoT/Ih24M3xJ2qItSTGHhzc4yTSiCsGAPxbhk8qYcv79H2AJvnAC06ZDRP+U5L4vWCKA1k0zTYd0j/TbPZBZYYRYBPMWaF7ZCL2Rani8BsfZuvRyOBtex+n61GqyNCnhCyNILmPKi55xRBN0gOvAUoDw/kJGMJm+oT1OcFUnusLguU07JRzEM3BVzyDj1rxPKCJ38gQNIWhs0wWAPTRinqcwiftGRTluysvS09z8FFd5yA4cF4q/Q="
