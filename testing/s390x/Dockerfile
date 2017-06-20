@@ -1,5 +1,5 @@
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
-FROM vicamo/debian:stretch-armel
+FROM vicamo/debian:testing-s390x
 
 ENV LAARID_USER=laarid
 ENV LAARID_HOME=/home/${LAARID_USER}

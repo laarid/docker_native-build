@@ -1,5 +1,5 @@
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
-FROM vicamo/debian:stretch-mips64el
+FROM vicamo/debian:testing-mips64el
 
 ENV LAARID_USER=laarid
 ENV LAARID_HOME=/home/${LAARID_USER}

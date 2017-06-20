@@ -5,25 +5,24 @@ services:
 
 env:
   matrix:
-  - JOB_DOCKERFILE_DIR=stretch/amd64 JOB_SUITE=stretch JOB_ARCH=amd64
-  - JOB_DOCKERFILE_DIR=stretch/arm64 JOB_SUITE=stretch JOB_ARCH=arm64 JOB_QEMU_ARCH=aarch64
-  - JOB_DOCKERFILE_DIR=stretch/armel JOB_SUITE=stretch JOB_ARCH=armel JOB_QEMU_ARCH=arm
-  - JOB_DOCKERFILE_DIR=stretch/armhf JOB_SUITE=stretch JOB_ARCH=armhf JOB_QEMU_ARCH=arm
-  - JOB_DOCKERFILE_DIR=stretch/i386 JOB_SUITE=stretch JOB_ARCH=i386
-  - JOB_DOCKERFILE_DIR=stretch/mips JOB_SUITE=stretch JOB_ARCH=mips JOB_QEMU_ARCH=mips
-  - JOB_DOCKERFILE_DIR=stretch/mips64el JOB_SUITE=stretch JOB_ARCH=mips64el JOB_QEMU_ARCH=mips64el
-  - JOB_DOCKERFILE_DIR=stretch/mipsel JOB_SUITE=stretch JOB_ARCH=mipsel JOB_QEMU_ARCH=mipsel
-  - JOB_DOCKERFILE_DIR=stretch/ppc64el JOB_SUITE=stretch JOB_ARCH=ppc64el JOB_QEMU_ARCH=ppc64le
-  - JOB_DOCKERFILE_DIR=stretch/ppc64el-next JOB_SUITE=stretch JOB_ARCH=ppc64el JOB_QEMU_ARCH=ppc64le JOB_SKIP_TAG=1
-  - JOB_DOCKERFILE_DIR=stretch/s390x JOB_SUITE=stretch JOB_ARCH=s390x JOB_QEMU_ARCH=s390x
+  - JOB_DOCKERFILE_DIR=testing/amd64 JOB_SUITE=testing JOB_ARCH=amd64
+  - JOB_DOCKERFILE_DIR=testing/arm64 JOB_SUITE=testing JOB_ARCH=arm64 JOB_QEMU_ARCH=aarch64
+  - JOB_DOCKERFILE_DIR=testing/armel JOB_SUITE=testing JOB_ARCH=armel JOB_QEMU_ARCH=arm
+  - JOB_DOCKERFILE_DIR=testing/armhf JOB_SUITE=testing JOB_ARCH=armhf JOB_QEMU_ARCH=arm
+  - JOB_DOCKERFILE_DIR=testing/i386 JOB_SUITE=testing JOB_ARCH=i386
+  - JOB_DOCKERFILE_DIR=testing/mips JOB_SUITE=testing JOB_ARCH=mips JOB_QEMU_ARCH=mips
+  - JOB_DOCKERFILE_DIR=testing/mips64el JOB_SUITE=testing JOB_ARCH=mips64el JOB_QEMU_ARCH=mips64el
+  - JOB_DOCKERFILE_DIR=testing/mipsel JOB_SUITE=testing JOB_ARCH=mipsel JOB_QEMU_ARCH=mipsel
+  - JOB_DOCKERFILE_DIR=testing/ppc64el JOB_SUITE=testing JOB_ARCH=ppc64el JOB_QEMU_ARCH=ppc64le
+  - JOB_DOCKERFILE_DIR=testing/ppc64el-next JOB_SUITE=testing JOB_ARCH=ppc64el JOB_QEMU_ARCH=ppc64le JOB_SKIP_TAG=1
+  - JOB_DOCKERFILE_DIR=testing/s390x JOB_SUITE=testing JOB_ARCH=s390x JOB_QEMU_ARCH=s390x
   global:
-  - TESTING_SUITE=$(curl --output - http://ftp.debian.org/debian/dists/testing/Release | grep '^Codename:' | awk '{print $2}')
   - secure: "NGpkPyR+Yw5ibEeGuXDm3jv5QlDNio8U+n5q8QjpKJMk66Y7W0zWgHNkS6gZ07Fk9MHwxHF+GA+4xoN1DFRG1qr7ERhlXBq636pVpU2H3vOCe1CWHdU7ZrEoxjzNLQOcHx+BL7/etQKTdEssEj5AQMmIiweQmqJs9EBGXxJdUsZMNCGN/5Xnht0HZ8QiH+salR1ra3vIHerm8XYuIZeozA2Zu8q39inh9s5MYqCbQzFnjtBxlbeaKhDU2cC1lUKWaKBhzNtuaCx3OX56R1a9QmQxeqUcJ57a0YWobQqUmKrluRhfM65UN9+PCP3rwHPhE/RGFIV/V2Kxlr7FViJPEABZNMbyyiz+KaUS6kugdg8RD3r79IZZ7NIP73wBY7BY98RZSb1Hhg2nfwNoZewc/Jba0fpzYXoiaG8M0tGRRV5EQfqL6iIO0QXVxM6UnOTJQjlbdVlu7zuQpJQabRwEVMIzfbebjaHtPMOQZAcBDvtEz9heJOFWqnQnbIjMSjR1zexNIgNHbQbynRRfuyXoToRoc5jJDOKWJwHb06RIlAgdFQXnvj1JkiOHTJ7AKLZZg83tHLjZEvwLcIKdhbZ4850D5TBiKADDqrlDIoYetZuCiCSkHGRY7NfAgDbPV7CPtt3IAAEu2c8DxadC5MmynJv84reRbzgQt06ILIvKQZU="
 
 matrix:
   fast_finish: true
   allow_failures:
-  - env: JOB_DOCKERFILE_DIR=stretch/ppc64el-next JOB_SUITE=stretch JOB_ARCH=ppc64el JOB_QEMU_ARCH=ppc64le JOB_SKIP_TAG=1
+  - env: JOB_DOCKERFILE_DIR=testing/ppc64el-next JOB_SUITE=testing JOB_ARCH=ppc64el JOB_QEMU_ARCH=ppc64le JOB_SKIP_TAG=1
 
 branches:
   only: master
@@ -39,9 +38,7 @@ addons:
 script:
 - dpkg -s qemu-user-static
 - docker build -t laarid/native-build:${JOB_SUITE}-${JOB_ARCH} ${JOB_DOCKERFILE_DIR}
-- if [ "${JOB_SUITE}" = "${TESTING_SUITE}" ]; then
-    docker tag laarid/native-build:${JOB_SUITE}-${JOB_ARCH} laarid/native-build:${JOB_ARCH};
-  fi
+- docker tag laarid/native-build:${JOB_SUITE}-${JOB_ARCH} laarid/native-build:${JOB_ARCH}
 - if [ -n "${JOB_QEMU_ARCH}" ]; then
     docker run --rm laarid/native-build:${JOB_SUITE}-${JOB_ARCH} /usr/bin/qemu-${JOB_QEMU_ARCH}-static --version;
   fi
@@ -56,9 +53,7 @@ after_success:
 - if [ "$TRAVIS_PULL_REQUEST" == "false" -a -z "${JOB_SKIP_TAG}" ]; then
     docker login -u "$DOCKER_USER" -p "$DOCKER_PASS";
     docker push laarid/native-build:${JOB_SUITE}-${JOB_ARCH};
-    if [ "${JOB_SUITE}" = "${TESTING_SUITE}" ]; then
-      docker push laarid/native-build:${JOB_ARCH};
-    fi
+    docker push laarid/native-build:${JOB_ARCH};
   fi
 
 notifications:
