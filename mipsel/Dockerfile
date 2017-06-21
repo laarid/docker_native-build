@@ -11,9 +11,11 @@ RUN apt-get update -qq \
 		build-essential \
 		ca-certificates \
 		ccache \
+		debhelper \
 		devscripts \
 		equivs \
 		git \
+		libc6-dev \
 		libfile-fcntllock-perl \
 		lintian \
 		sudo
