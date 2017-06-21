@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: helloworld-@HELLOWORLD_API_VERSION@
+Description: A helloworld library
+Version: @VERSION@
+Libs: -L${libdir} -lhelloworld
+Cflags: -I${includedir}
