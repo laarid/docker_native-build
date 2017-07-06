@@ -1,10 +1,8 @@
+# DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
 FROM vicamo/debian:testing-ppc64el
 
 ENV LAARID_USER=laarid
 ENV LAARID_HOME=/home/${LAARID_USER}
-
-# Work-around https://github.com/laarid/docker/issues/19
-ADD qemu-ppc64le-static-2.7.0 /usr/bin/qemu-ppc64le-static
 
 RUN apt-get update -qq \
 	&& apt-get upgrade -y \
