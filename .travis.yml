@@ -1,4 +1,3 @@
-dist: trusty
 sudo: required
 services:
 - docker
@@ -6,15 +5,15 @@ services:
 env:
   matrix:
   - JOB_ARCH=amd64
-  - JOB_ARCH=arm64 JOB_QEMU_ARCH=aarch64
-  - JOB_ARCH=armel JOB_QEMU_ARCH=arm
-  - JOB_ARCH=armhf JOB_QEMU_ARCH=arm
+  - JOB_ARCH=arm64
+  - JOB_ARCH=armel
+  - JOB_ARCH=armhf
   - JOB_ARCH=i386
-  - JOB_ARCH=mips JOB_QEMU_ARCH=mips
-  - JOB_ARCH=mips64el JOB_QEMU_ARCH=mips64el
-  - JOB_ARCH=mipsel JOB_QEMU_ARCH=mipsel
-  - JOB_ARCH=ppc64el JOB_QEMU_ARCH=ppc64le
-  - JOB_ARCH=s390x JOB_QEMU_ARCH=s390x
+  - JOB_ARCH=mips
+  - JOB_ARCH=mips64el
+  - JOB_ARCH=mipsel
+  - JOB_ARCH=ppc64el
+  - JOB_ARCH=s390x
   global:
   - secure: "NGpkPyR+Yw5ibEeGuXDm3jv5QlDNio8U+n5q8QjpKJMk66Y7W0zWgHNkS6gZ07Fk9MHwxHF+GA+4xoN1DFRG1qr7ERhlXBq636pVpU2H3vOCe1CWHdU7ZrEoxjzNLQOcHx+BL7/etQKTdEssEj5AQMmIiweQmqJs9EBGXxJdUsZMNCGN/5Xnht0HZ8QiH+salR1ra3vIHerm8XYuIZeozA2Zu8q39inh9s5MYqCbQzFnjtBxlbeaKhDU2cC1lUKWaKBhzNtuaCx3OX56R1a9QmQxeqUcJ57a0YWobQqUmKrluRhfM65UN9+PCP3rwHPhE/RGFIV/V2Kxlr7FViJPEABZNMbyyiz+KaUS6kugdg8RD3r79IZZ7NIP73wBY7BY98RZSb1Hhg2nfwNoZewc/Jba0fpzYXoiaG8M0tGRRV5EQfqL6iIO0QXVxM6UnOTJQjlbdVlu7zuQpJQabRwEVMIzfbebjaHtPMOQZAcBDvtEz9heJOFWqnQnbIjMSjR1zexNIgNHbQbynRRfuyXoToRoc5jJDOKWJwHb06RIlAgdFQXnvj1JkiOHTJ7AKLZZg83tHLjZEvwLcIKdhbZ4850D5TBiKADDqrlDIoYetZuCiCSkHGRY7NfAgDbPV7CPtt3IAAEu2c8DxadC5MmynJv84reRbzgQt06ILIvKQZU="
 
@@ -24,20 +23,12 @@ matrix:
 branches:
   only: master
 
-addons:
-  apt:
-    sources:
-    - sourceline: 'deb http://archive.ubuntu.com/ubuntu/ devel universe'
-    packages:
-    - binfmt-support
-    - qemu-user-static
+before_script:
+- docker run --rm --privileged vicamo/binfmt-qemu:latest
+- cat /proc/sys/fs/binfmt_misc/qemu-*
 
 script:
-- dpkg -s qemu-user-static
 - docker build -t laarid/native-build:${JOB_ARCH} ${JOB_ARCH}
-- if [ -n "${JOB_QEMU_ARCH}" ]; then
-    docker run --rm laarid/native-build:${JOB_ARCH} /usr/bin/qemu-${JOB_QEMU_ARCH}-static --version;
-  fi
 
 after_success:
 - if [ "$TRAVIS_PULL_REQUEST" == "false" -a -z "${JOB_SKIP_TAG}" ]; then
