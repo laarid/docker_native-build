@@ -20,20 +20,18 @@ env:
 matrix:
   fast_finish: true
 
-branches:
-  only: master
-
 before_script:
 - docker run --rm --privileged vicamo/binfmt-qemu:latest
 - cat /proc/sys/fs/binfmt_misc/qemu-*
 
 script:
-- docker build -t laarid/native-build:${JOB_ARCH} ${JOB_ARCH}
+- ./update.sh ${TRAVIS_BRANCH}
+- docker build -t laarid/native-build:${TRAVIS_BRANCH}-${JOB_ARCH} ${JOB_ARCH}
 
 after_success:
 - if [ "$TRAVIS_PULL_REQUEST" == "false" -a -z "${JOB_SKIP_TAG}" ]; then
     docker login -u "$DOCKER_USER" -p "$DOCKER_PASS";
-    docker push laarid/native-build:${JOB_ARCH};
+    docker push laarid/native-build:${TRAVIS_BRANCH}-${JOB_ARCH};
   fi
 
 notifications:

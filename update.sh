@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # set -x
-SUITE=testing
+SUITE=$1
 
 for f in $(find . -type f -name Dockerfile); do
   [ -n "$(head -n 1 $f | grep '^#.*GENERATED FROM')" ] || continue;
