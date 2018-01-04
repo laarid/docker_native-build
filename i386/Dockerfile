@@ -21,7 +21,7 @@ RUN apt-get update -qq \
 		lintian \
 		sudo
 
-RUN echo "deb [allow-insecure=yes] http://dl.bintray.com/laarid/main buster main" | \
+RUN echo "deb [allow-insecure=yes] http://dl.bintray.com/laarid/debian buster main" | \
 		tee /etc/apt/sources.list.d/bintray.list; \
 	(echo "Package: *"; echo "Pin: origin \"dl.bintray.com\""; echo "Pin-Priority: 1000") | \
 		tee /etc/apt/preferences.d/bintray.pref; \
