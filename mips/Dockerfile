@@ -1,5 +1,5 @@
 # DO NOT EDIT!!! GENERATED FROM Dockerfile.template.
-FROM vicamo/debian:buster-mips
+FROM vicamo/debian:sid-mips
 
 ENV LAARID_USER=laarid
 ENV LAARID_HOME=/home/${LAARID_USER}
@@ -21,7 +21,7 @@ RUN apt-get update -qq \
 		lintian \
 		sudo
 
-RUN echo "deb [allow-insecure=yes] http://dl.bintray.com/laarid/debian buster main" | \
+RUN echo "deb [allow-insecure=yes] http://dl.bintray.com/laarid/debian sid main" | \
 		tee /etc/apt/sources.list.d/bintray.list; \
 	(echo "Package: *"; echo "Pin: origin \"dl.bintray.com\""; echo "Pin-Priority: 1000") | \
 		tee /etc/apt/preferences.d/bintray.pref; \
